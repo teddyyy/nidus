@@ -5,6 +5,7 @@ import sys
 
 from slack import Slack
 from urllib.request import urlopen
+from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from collections import OrderedDict
 
@@ -33,11 +34,11 @@ def main():
     date = datetime.date.today() - datetime.timedelta(1)
     search_date = date.strftime("%Y-%m-%d")
 
-    # for debug
+    # create text message
     text = []
     for key, value in dict_list.items():
         if value == search_date:
-            text.append(URL + key)
+            text.append(key)
 
     # post to slack
     slack = Slack(yaml['token'])
@@ -56,7 +57,8 @@ def scrape_draft_url(html):
 
     for link in soup.findAll("a"):
         if "draft" in link.get("href"):
-            draft_list.append(link.string)
+            draft = urljoin(URL, link.get("href"))
+            draft_list.append(draft)
 
     return draft_list
 
