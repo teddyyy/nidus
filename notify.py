@@ -22,8 +22,8 @@ def main():
 
     # scrape draft from web site
     html = fetch('https://datatracker.ietf.org/doc/active/')
-    draft_list = scrape_draft_url(html)
-    date_list = extract_date_from_url(html)
+    draft_list = extract_draft_from_html(html)
+    date_list = extract_date_from_html(html)
 
     # create dictionary list
     dict_list = OrderedDict()
@@ -34,9 +34,9 @@ def main():
     date = datetime.date.today() - datetime.timedelta(1)
     search_date = date.strftime("%Y-%m-%d")
 
-    # post to slack
     slack = Slack(yaml['token'])
 
+    # post to slack
     for key, value in dict_list.items():
         if value == search_date:
             slack.post(yaml['channel'], key, yaml['username'])
@@ -48,18 +48,30 @@ def fetch(url):
 
     return html
 
-def scrape_draft_url(html):
+def extract_draft_from_html(html):
     soup = BeautifulSoup(html, "html.parser")
     draft_list = []
+    url_list = []
+    title_list = []
 
+    # scrape link of draft
     for link in soup.findAll("a"):
         if "draft" in link.get("href"):
             draft = urljoin(URL, link.get("href"))
-            draft_list.append(draft)
+            url_list.append(draft)
+
+    # scrape title of draft
+    for link in soup.findAll("b"):
+        if link.parent.name == "p":
+            title_list.append(link.string)
+
+    # join title and link
+    for (title, url) in zip(title_list, url_list):
+        draft_list.append(title + "\n" + url)
 
     return draft_list
 
-def extract_date_from_url(html):
+def extract_date_from_html(html):
     pattern = r"<br>\d*-\d*-\d*"
     date_list = []
 
