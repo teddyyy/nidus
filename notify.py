@@ -33,7 +33,7 @@ def main():
 
     yaml = load_yaml(YAML_PATH)
     cli = SlackClient(yaml['token'])
-    post_slack(cli, text)
+    post_slack(cli, yaml['channel'], text, yaml['username'])
 
 def fetch(url):
     r = urlopen(url)
@@ -69,9 +69,8 @@ def load_yaml(path):
 
     return ret
 
-def post_slack(cli, text):
-    print (cli.api_call("chat.postMessage", channel="ietf-draft",
-        text=text, username="draft-notifier"))
+def post_slack(cli, channel, text, username):
+    print (cli.api_call("chat.postMessage", channel=channel, text=text, username=username))
 
 if __name__ == '__main__':
     main()
