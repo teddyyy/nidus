@@ -34,15 +34,12 @@ def main():
     date = datetime.date.today() - datetime.timedelta(1)
     search_date = date.strftime("%Y-%m-%d")
 
-    # create text message
-    text = []
-    for key, value in dict_list.items():
-        if value == search_date:
-            text.append(key)
-
     # post to slack
     slack = Slack(yaml['token'])
-    slack.post(yaml['channel'], text, yaml['username'])
+
+    for key, value in dict_list.items():
+        if value == search_date:
+            slack.post(yaml['channel'], key, yaml['username'])
 
 def fetch(url):
     r = urlopen(url)
