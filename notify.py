@@ -2,7 +2,7 @@ import re
 import datetime
 import yaml
 
-from slackclient import SlackClient
+from slack import Slack
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from collections import OrderedDict
@@ -32,8 +32,8 @@ def main():
             text.append(URL + key)
 
     yaml = load_yaml(YAML_PATH)
-    cli = SlackClient(yaml['token'])
-    post_slack(cli, text)
+    slack = Slack(yaml['token'])
+    slack.post(yaml['channel'], text, yaml['username'])
 
 def fetch(url):
     r = urlopen(url)
@@ -68,10 +68,6 @@ def load_yaml(path):
     ret = yaml.load(f)
 
     return ret
-
-def post_slack(cli, text):
-    print (cli.api_call("chat.postMessage", channel="ietf-draft",
-        text=text, username="draft-notifier"))
 
 if __name__ == '__main__':
     main()
