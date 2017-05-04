@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PRG_DIR=/home/teddy/notify_I-Ds
+PRG_DIR=/home/teddy/nidus
 
 cd $PRG_DIR
 source venv/bin/activate
