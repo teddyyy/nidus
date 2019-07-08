@@ -8,6 +8,7 @@ import sys
 from slack import Slack
 from urllib.request import urlopen
 from urllib.parse import urljoin
+from urllib.error import URLError
 from bs4 import BeautifulSoup
 from collections import OrderedDict
 
@@ -24,6 +25,10 @@ def main():
 
     # scrape draft from web site
     html = fetch('https://datatracker.ietf.org/doc/active/')
+    if not html:
+        sys.stderr.write("An error occurred. Can not html data")
+        sys.exit(2)
+
     draft_list = extract_draft_from_html(html)
     date_list = extract_date_from_html(html)
 
@@ -44,9 +49,13 @@ def main():
             slack.post(yaml['channel'], key, yaml['username'])
 
 def fetch(url):
-    r = urlopen(url)
-    encode = r.info().get_content_charset(failobj="utf-8")
-    html = r.read().decode(encode)
+    html = ''
+    try:
+        r = urlopen(url)
+        encode = r.info().get_content_charset(failobj="utf-8")
+        html = r.read().decode(encode)
+    except URLError as e:
+        print("error occurred" + e.reason)
 
     return html
 
