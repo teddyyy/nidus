@@ -2,7 +2,6 @@
 
 import re
 import datetime
-import yaml
 import sys
 import argparse
 
@@ -90,20 +89,9 @@ def extract_date_from_html(html):
 
     return date_list
 
-def _load_config_file(path):
-    f = open(path, 'r').read()
-    yaml = yaml.load(f)
-
-    if yaml is None:
-        sys.stderr.write("Please set parameter\n")
-        sys.exit(2)
-
-    return yaml
-
 def load():
     parser = argparse.ArgumentParser(description='Notification of Internet Draft Update using Slack')
     parser.add_argument('token', help='slack channel token')
-    parser.add_argument('--file', help='config file path')
     parser.add_argument('--channel', default='ietf-draft')
     parser.add_argument('--username', default='nidus')
     args = parser.parse_args()
@@ -113,9 +101,6 @@ def load():
     params['token'] = args.token
     params['channel'] = args.channel
     params['username'] = args.username
-
-    if args.file:
-        return _load_config_file(args.file)
 
     return params
 
