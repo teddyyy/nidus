@@ -2,7 +2,7 @@ name: nidus
 
 on:
   schedule:
-    - cron: */5 * * * *
+    - cron: "*/5 * * * *"
 
 env:
   SLACK_TOKEN: {{ $secrets.SLACK_TOKEN }}
