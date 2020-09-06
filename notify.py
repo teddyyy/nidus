@@ -4,6 +4,7 @@ import re
 import datetime
 import yaml
 import sys
+import argparse
 
 from slack import Slack
 from urllib.request import urlopen
@@ -12,16 +13,12 @@ from urllib.error import URLError
 from bs4 import BeautifulSoup
 from collections import OrderedDict
 
-YAML_PATH = './config/slack.yml'
 URL = 'https://datatracker.ietf.org/doc/'
 
 def main():
 
-    # load parameter from config file
-    yaml = load_yaml(YAML_PATH)
-    if yaml['token'] is None or yaml['channel'] is None:
-        sys.stderr.write("Please set parameter\n")
-        sys.exit(2)
+    # load parameter of slack
+    params = load()
 
     # scrape draft from web site
     html = fetch('https://datatracker.ietf.org/doc/active/')
@@ -41,12 +38,12 @@ def main():
     date = datetime.date.today() - datetime.timedelta(1)
     search_date = date.strftime("%Y-%m-%d")
 
-    slack = Slack(yaml['token'])
+    slack = Slack(params['token'])
 
     # post to slack
     for key, value in dict_list.items():
         if value == search_date:
-            slack.post(yaml['channel'], key, yaml['username'])
+            slack.post(params['channel'], key, params['username'])
 
 def fetch(url):
     html = ''
@@ -93,11 +90,34 @@ def extract_date_from_html(html):
 
     return date_list
 
-def load_yaml(path):
+def _load_config_file(path):
     f = open(path, 'r').read()
-    ret = yaml.load(f)
+    yaml = yaml.load(f)
 
-    return ret
+    if yaml is None:
+        sys.stderr.write("Please set parameter\n")
+        sys.exit(2)
+
+    return yaml
+
+def load():
+    parser = argparse.ArgumentParser(description='Notification of Internet Draft Update using Slack')
+    parser.add_argument('--file')
+    parser.add_argument('--token')
+    parser.add_argument('--channel', default='ietf-draft')
+    parser.add_argument('--username', default='nidus')
+    args = parser.parse_args()
+
+    if args.file:
+        return _load_config_file(args.file)
+
+    params = {}
+    params['token'] = args.token
+    params['channel'] = args.channel
+    params['username'] = args.username
+
+    return params
+
 
 if __name__ == '__main__':
     main()
