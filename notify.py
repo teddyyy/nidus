@@ -102,19 +102,20 @@ def _load_config_file(path):
 
 def load():
     parser = argparse.ArgumentParser(description='Notification of Internet Draft Update using Slack')
-    parser.add_argument('--file')
-    parser.add_argument('--token')
+    parser.add_argument('token', help='slack channel token')
+    parser.add_argument('--file', help='config file path')
     parser.add_argument('--channel', default='ietf-draft')
     parser.add_argument('--username', default='nidus')
     args = parser.parse_args()
 
-    if args.file:
-        return _load_config_file(args.file)
-
     params = {}
+
     params['token'] = args.token
     params['channel'] = args.channel
     params['username'] = args.username
+
+    if args.file:
+        return _load_config_file(args.file)
 
     return params
 
