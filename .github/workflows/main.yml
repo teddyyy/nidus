@@ -1,0 +1,27 @@
+name: nidus
+
+on:
+  schedule:
+    - cron: */5 * * * *
+
+env:
+  SLACK_TOKEN: {{ $secrets.SLACK_TOKEN }}
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.5, 3.6, 3.7, 3.8]
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: execute nidus
+        run: python notify.py env.SLACK_TOKEN
