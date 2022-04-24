@@ -12,7 +12,7 @@ from urllib.error import URLError
 from bs4 import BeautifulSoup
 from collections import OrderedDict
 
-URL = 'https://datatracker.ietf.org/doc/'
+BASEURL = 'https://datatracker.ietf.org/doc/'
 
 def main():
 
@@ -42,7 +42,7 @@ def main():
     # post to slack
     for key, value in dict_list.items():
         if value == search_date:
-            slack.post(params['channel'], key, params['username'])
+            slack.post(params['channel'], key)
 
 def fetch(url):
     html = ''
@@ -64,43 +64,42 @@ def extract_draft_from_html(html):
     # scrape link of draft
     for link in soup.findAll("a"):
         if "draft" in link.get("href"):
-            draft = urljoin(URL, link.get("href"))
+            draft = urljoin(BASEURL, link.get("href"))
             url_list.append(draft)
 
     # scrape title of draft
     for link in soup.findAll("b"):
-        if link.parent.name == "p":
+        if link.string != 'Javascript disabled?':
             title_list.append(link.string)
 
     # join title and link
     for (title, url) in zip(title_list, url_list):
         draft_list.append(title + "\n" + url)
 
+    print(f'draft_list: {draft_list}')
     return draft_list
 
 def extract_date_from_html(html):
-    pattern = r"<br>\d*-\d*-\d*"
+    pattern = r"<br>\s*\d*-\d*-\d*"
     date_list = []
 
     matchs = re.findall(pattern, html)
     for match in matchs:
-        date = match.replace('<br>', '')
-        date_list.append(date)
+        date_list.append(re.sub('<br>\s*', '', match))
 
+    print(f'date_list: {date_list}')
     return date_list
 
 def load():
     parser = argparse.ArgumentParser(description='Notification of Internet Draft Update using Slack')
-    parser.add_argument('token', help='slack channel token')
+    parser.add_argument('token', help='Slack Bot User OAuth Token')
     parser.add_argument('--channel', default='ietf-draft')
-    parser.add_argument('--username', default='nidus')
     args = parser.parse_args()
 
     params = {}
 
     params['token'] = args.token
     params['channel'] = args.channel
-    params['username'] = args.username
 
     return params
 

@@ -8,5 +8,5 @@ pip install -r requirements.txt
 
 ## Run Script
 ```
-python notify.py SLACK_TOKEN
+python notify.py SLACK_BOT_USER_OAUHT_TOKEN
 ```
