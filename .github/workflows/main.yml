@@ -18,5 +18,5 @@ jobs:
           python-version: 3.8
       - name: Install dependencies
         run: pip install -r requirements.txt
-      - name: execute nidus
+      - name: Execute nidus
         run: python notify.py ${SLACK_BOT_USER_OAUHT_TOKEN}
