@@ -42,6 +42,7 @@ def main():
     # post to slack
     for key, value in dict_list.items():
         if value == search_date:
+            print(f'draft: {key}')
             slack.post(params['channel'], key)
 
 def fetch(url):
@@ -75,8 +76,7 @@ def extract_draft_from_html(html):
     # join title and link
     for (title, url) in zip(title_list, url_list):
         draft_list.append(title + "\n" + url)
-
-    print(f'draft_list: {draft_list}')
+    
     return draft_list
 
 def extract_date_from_html(html):
@@ -86,8 +86,7 @@ def extract_date_from_html(html):
     matchs = re.findall(pattern, html)
     for match in matchs:
         date_list.append(re.sub('<br>\s*', '', match))
-
-    print(f'date_list: {date_list}')
+        
     return date_list
 
 def load():
