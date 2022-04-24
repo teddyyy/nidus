@@ -33,13 +33,16 @@ def main():
     for (draft, date) in zip(draft_list, date_list):
         dict_list[draft] = date
 
-    # get yesterday date
-    date = datetime.date.today() - datetime.timedelta(1)
-    search_date = date.strftime("%Y-%m-%d")
-
-    slack = Slack(params['token'])
+    search_date = ''
+    if not params['search_date']:
+        # get yesterday date
+        date = datetime.date.today() - datetime.timedelta(1)
+        search_date = date.strftime("%Y-%m-%d")
+    else:
+        search_date = params['search_date']
 
     # post to slack
+    slack = Slack(params['token'])
     for key, value in dict_list.items():
         if value == search_date:
             print(f'draft: {key}')
@@ -93,12 +96,14 @@ def load():
     parser = argparse.ArgumentParser(description='Notification of Internet Draft Update using Slack')
     parser.add_argument('token', help='Slack Bot User OAuth Token')
     parser.add_argument('--channel', default='ietf-draft')
+    parser.add_argument('--search_date', default='', help='YYYY-MM-DD')
     args = parser.parse_args()
 
     params = {}
 
     params['token'] = args.token
     params['channel'] = args.channel
+    params['search_date'] = args.search_date
 
     return params
 
