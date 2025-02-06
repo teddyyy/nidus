@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.10
 
 WORKDIR /src
 COPY notify.py slack.py requirements.txt /src
