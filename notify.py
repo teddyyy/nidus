@@ -5,8 +5,7 @@ import datetime
 import sys
 import argparse
 
-import collections
-import collections.abc
+from collections import OrderedDict
 
 from slack import Slack
 from urllib.request import urlopen
@@ -31,7 +30,7 @@ def main():
     date_list = extract_date_from_html(html)
 
     # create dictionary list
-    dict_list = collections.OrderedDict()
+    dict_list = OrderedDict()
     for (draft, date) in zip(draft_list, date_list):
         dict_list[draft] = date
 
