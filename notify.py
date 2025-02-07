@@ -5,12 +5,14 @@ import datetime
 import sys
 import argparse
 
+import collections
+collections.Callable = collections.abc.Callables
+
 from slack import Slack
 from urllib.request import urlopen
 from urllib.parse import urljoin
 from urllib.error import URLError
 from bs4 import BeautifulSoup
-from collections import OrderedDict
 
 BASEURL = 'https://datatracker.ietf.org/doc/'
 
@@ -29,7 +31,7 @@ def main():
     date_list = extract_date_from_html(html)
 
     # create dictionary list
-    dict_list = OrderedDict()
+    dict_list = collections.OrderedDict()
     for (draft, date) in zip(draft_list, date_list):
         dict_list[draft] = date
 
