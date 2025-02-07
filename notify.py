@@ -6,7 +6,7 @@ import sys
 import argparse
 
 import collections
-collections.Callable = collections.abc.Callables
+import collections.abc
 
 from slack import Slack
 from urllib.request import urlopen
