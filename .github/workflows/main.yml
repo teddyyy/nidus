@@ -9,16 +9,16 @@ on:
 
 jobs:
   cleanup:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     env:
       SLACK_BOT_USER_OAUHT_TOKEN: ${{ secrets.SLACK_BOT_USER_OAUHT_TOKEN }}
     steps:
       - uses: actions/checkout@v1
       - name: Set up Python 3.10
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v3
         with:
-          python-version: 3.10
+          python-version: '3.10'
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Execute nidus
